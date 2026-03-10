@@ -6,13 +6,14 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Filter, ChevronDown, LayoutGrid, List, Search, X, ChevronRight } from 'lucide-react';
-import { products } from '../data/products';
+import { useProductStore } from '../store/useProductStore';
 import { ProductCard } from '../components/ProductCard';
 import { Category } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx } from 'clsx';
 
 export function Catalog() {
+  const { products } = useProductStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('relevant');

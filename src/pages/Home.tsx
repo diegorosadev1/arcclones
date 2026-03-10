@@ -5,11 +5,12 @@
 
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Zap, Headphones, RefreshCw, Star, Quote } from 'lucide-react';
-import { products } from '../data/products';
+import { useProductStore } from '../store/useProductStore';
 import { ProductCard } from '../components/ProductCard';
 import { motion } from 'motion/react';
 
 export function Home() {
+  const { products } = useProductStore();
   const featuredProducts = products.filter(p => p.featured).slice(0, 4);
   const bestSellers = products.filter(p => p.bestSeller).slice(0, 4);
   const newArrivals = products.filter(p => p.newArrival).slice(0, 4);

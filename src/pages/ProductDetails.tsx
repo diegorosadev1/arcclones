@@ -6,7 +6,8 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Star, Heart, ShoppingCart, ShieldCheck, Truck, RefreshCw, ChevronRight, Minus, Plus, Share2, MessageSquare } from 'lucide-react';
-import { products } from '../data/products';
+import { useProductStore } from '../store/useProductStore';
+import { useWishlistStore } from '../store/useWishlistStore';
 import { useStore } from '../store/useStore';
 import { ProductCard } from '../components/ProductCard';
 import { motion } from 'motion/react';
@@ -15,11 +16,13 @@ import { clsx } from 'clsx';
 export function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, toggleWishlist, isInWishlist } = useStore();
+  const { products } = useProductStore();
+  const { toggleFavorite, isFavorite } = useWishlistStore();
+  const { addToCart } = useStore();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
 
-  const product = useMemo(() => products.find(p => p.id === id), [id]);
+  const product = useMemo(() => products.find(p => p.id === id), [id, products]);
 
   if (!product) {
     return (
@@ -34,7 +37,7 @@ export function ProductDetails() {
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
-  const isWishlisted = isInWishlist(product.id);
+  const isWishlisted = isFavorite(product.id);
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
@@ -167,7 +170,7 @@ export function ProductDetails() {
               </div>
               
               <button
-                onClick={() => toggleWishlist(product.id)}
+                onClick={() => toggleFavorite(product.id)}
                 className={clsx(
                   "flex-grow flex items-center justify-center gap-2 py-4 rounded-full border transition-all duration-300 font-bold text-sm uppercase tracking-widest",
                   isWishlisted ? "bg-accent/10 border-accent text-accent" : "border-zinc-800 text-zinc-400 hover:border-accent hover:text-accent"

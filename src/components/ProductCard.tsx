@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 import { Product } from '../types';
 import { useStore } from '../store/useStore';
+import { useWishlistStore } from '../store/useWishlistStore';
 import { motion } from 'motion/react';
 import { clsx } from 'clsx';
 
@@ -17,8 +18,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addToCart, toggleWishlist, isInWishlist } = useStore();
-  const isWishlisted = isInWishlist(product.id);
+  const { addToCart } = useStore();
+  const { toggleFavorite, isFavorite } = useWishlistStore();
+  const isWishlisted = isFavorite(product.id);
 
   return (
     <motion.div
@@ -52,7 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Quick Actions */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
           <button
-            onClick={() => toggleWishlist(product.id)}
+            onClick={() => toggleFavorite(product.id)}
             className={clsx(
               "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
               isWishlisted ? "bg-accent text-white" : "bg-white text-zinc-900 hover:bg-accent hover:text-white"

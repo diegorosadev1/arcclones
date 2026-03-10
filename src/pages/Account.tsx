@@ -7,6 +7,9 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Package, MapPin, Heart, LogOut, ChevronRight, Settings, ShieldCheck, CreditCard, Bell } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { useProductStore } from '../store/useProductStore';
+import { useWishlistStore } from '../store/useWishlistStore';
+import { ProductCard } from '../components/ProductCard';
 import { motion } from 'motion/react';
 import { clsx } from 'clsx';
 
@@ -14,8 +17,12 @@ type Tab = 'profile' | 'orders' | 'addresses' | 'wishlist';
 
 export function Account() {
   const { user, setUser, addNotification } = useStore();
+  const { products } = useProductStore();
+  const { wishlist } = useWishlistStore();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('profile');
+
+  const wishlistProducts = products.filter(p => wishlist.includes(p.id));
 
   if (!user) {
     navigate('/login');
@@ -208,10 +215,19 @@ export function Account() {
                   <h2 className="text-3xl font-display font-bold">Favoritos</h2>
                   <p className="text-zinc-500">Seus itens de desejo salvos para mais tarde.</p>
                 </div>
-                <div className="text-center py-20 space-y-4">
-                  <Heart size={48} className="mx-auto text-zinc-800" />
-                  <p className="text-zinc-500">Você ainda não tem favoritos. <Link to="/catalog" className="text-accent hover:underline">Explorar Catálogo</Link></p>
-                </div>
+                
+                {wishlistProducts.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {wishlistProducts.map(product => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-20 space-y-4">
+                    <Heart size={48} className="mx-auto text-zinc-800" />
+                    <p className="text-zinc-500">Você ainda não tem favoritos. <Link to="/catalog" className="text-accent hover:underline">Explorar Catálogo</Link></p>
+                  </div>
+                )}
               </div>
             )}
           </motion.div>

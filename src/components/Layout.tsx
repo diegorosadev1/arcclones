@@ -7,6 +7,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, Menu, X, LogOut, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
+import { useWishlistStore } from '../store/useWishlistStore';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -28,7 +29,8 @@ export function Layout() {
 }
 
 function Header() {
-  const { cart, wishlist, user, setUser } = useStore();
+  const { cart, user, setUser } = useStore();
+  const { wishlist } = useWishlistStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -251,6 +253,7 @@ function Footer() {
             <li><Link to="#" className="text-zinc-400 hover:text-accent text-sm transition-colors">Política de Privacidade</Link></li>
             <li><Link to="#" className="text-zinc-400 hover:text-accent text-sm transition-colors">Termos de Uso</Link></li>
             <li><Link to="#" className="text-zinc-400 hover:text-accent text-sm transition-colors">Trocas e Devoluções</Link></li>
+            <li><Link to="/admin" className="text-zinc-400 hover:text-accent text-sm transition-colors">Painel Administrativo</Link></li>
           </ul>
         </div>
 

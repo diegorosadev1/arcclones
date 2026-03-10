@@ -5,13 +5,14 @@
 
 import { Link } from 'react-router-dom';
 import { Heart, ArrowRight, ShoppingBag, ChevronRight } from 'lucide-react';
-import { useStore } from '../store/useStore';
-import { products } from '../data/products';
+import { useProductStore } from '../store/useProductStore';
+import { useWishlistStore } from '../store/useWishlistStore';
 import { ProductCard } from '../components/ProductCard';
 import { motion, AnimatePresence } from 'motion/react';
 
 export function Wishlist() {
-  const { wishlist } = useStore();
+  const { products } = useProductStore();
+  const { wishlist } = useWishlistStore();
   
   const wishlistProducts = products.filter(p => wishlist.includes(p.id));
 

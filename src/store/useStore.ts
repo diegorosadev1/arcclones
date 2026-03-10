@@ -16,15 +16,12 @@ interface Notification {
 interface StoreState {
   user: User | null;
   cart: CartItem[];
-  wishlist: string[];
   notifications: Notification[];
   setUser: (user: User | null) => void;
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
-  toggleWishlist: (productId: string) => void;
-  isInWishlist: (productId: string) => boolean;
   addNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   removeNotification: (id: string) => void;
 }
@@ -34,7 +31,6 @@ export const useStore = create<StoreState>()(
     (set, get) => ({
       user: null,
       cart: [],
-      wishlist: [],
       notifications: [],
 
       setUser: (user) => set({ user }),
@@ -76,20 +72,6 @@ export const useStore = create<StoreState>()(
 
       clearCart: () => set({ cart: [] }),
 
-      toggleWishlist: (productId) => {
-        const wishlist = get().wishlist;
-        const isIn = wishlist.includes(productId);
-        if (isIn) {
-          set({ wishlist: wishlist.filter((id) => id !== productId) });
-          get().addNotification('Removido dos favoritos', 'info');
-        } else {
-          set({ wishlist: [...wishlist, productId] });
-          get().addNotification('Adicionado aos favoritos', 'success');
-        }
-      },
-
-      isInWishlist: (productId) => get().wishlist.includes(productId),
-
       addNotification: (message, type = 'info') => {
         const id = Math.random().toString(36).substring(7);
         set({ notifications: [...get().notifications, { id, message, type }] });
@@ -105,7 +87,6 @@ export const useStore = create<StoreState>()(
       partialize: (state) => ({
         user: state.user,
         cart: state.cart,
-        wishlist: state.wishlist,
       }),
     }
   )
