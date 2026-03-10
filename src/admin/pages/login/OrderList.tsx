@@ -18,12 +18,13 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
-import { useAdminOrdersStore } from '../stores/useAdminOrdersStore';
-import { DataTable } from '../components/DataTable';
-import { Order, OrderStatus, PaymentStatus } from '../types';
+
 import { useNavigate } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
+import { Order, OrderStatus, PaymentStatus } from '../../types';
+import { useAdminOrdersStore } from '../../stores/useAdminOrdersStore';
+import { DataTable } from '../../components/shared/DataTable';
 
 export function OrderList() {
   const { orders, isLoading, updateOrderStatus, cancelOrder } = useAdminOrdersStore();

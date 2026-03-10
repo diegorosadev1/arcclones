@@ -19,12 +19,13 @@ import {
   List,
   AlertCircle
 } from 'lucide-react';
-import { useProductStore } from '../../store/useProductStore';
-import { DataTable } from '../components/DataTable';
-import { Product } from '../../types';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
+import { useProductStore } from '@/src/store/useProductStore';
+import { Product } from '@/src/types';
+import { DataTable } from '../../components/shared/DataTable';
 
 export function ProductList() {
   const { products, isLoading, deleteProduct, toggleFeatured } = useProductStore();

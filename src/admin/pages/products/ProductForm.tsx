@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { ProductFormLayout } from '@/src/components/admin/products/ProductFormLayout';
+import { useProductStore } from '@/src/store/useProductStore';
 import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useProductStore } from '../../store/useProductStore';
-import { ProductFormLayout } from '../../components/admin/products/ProductFormLayout';
+
 
 export function ProductForm() {
   const { id } = useParams();

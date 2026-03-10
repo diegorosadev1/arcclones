@@ -15,7 +15,7 @@ import {
   ExternalLink,
   ChevronRight
 } from 'lucide-react';
-import { useAdminAuthStore } from '../stores/useAdminAuthStore';
+import { useAdminAuthStore } from '../../stores/useAdminAuthStore';
 import { clsx } from 'clsx';
 
 export function AdminSidebar() {

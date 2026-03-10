@@ -17,12 +17,13 @@ import {
   Mail,
   Phone
 } from 'lucide-react';
-import { useAdminUsersStore } from '../stores/useAdminUsersStore';
-import { DataTable } from '../components/DataTable';
-import { Customer } from '../types';
+
 import { useNavigate } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAdminUsersStore } from '../../stores/useAdminUsersStore';
+import { Customer } from '../../types';
+import { DataTable } from '../../components/shared/DataTable';
 
 export function UserList() {
   const { users, isLoading, toggleUserStatus } = useAdminUsersStore();

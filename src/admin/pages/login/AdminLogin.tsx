@@ -6,8 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, ShieldCheck, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useAdminAuthStore } from '../stores/useAdminAuthStore';
 import { motion } from 'motion/react';
+import { useAdminAuthStore } from '../../stores/useAdminAuthStore';
 
 export function AdminLogin() {
   const [email, setEmail] = useState('admin@luxe.com');

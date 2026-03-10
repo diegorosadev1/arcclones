@@ -23,10 +23,10 @@ import {
   ExternalLink,
   History
 } from 'lucide-react';
-import { useAdminOrdersStore } from '../stores/useAdminOrdersStore';
 import { clsx } from 'clsx';
 import { motion } from 'motion/react';
-import { OrderStatus, PaymentStatus } from '../types';
+import { useAdminOrdersStore } from '../../stores/useAdminOrdersStore';
+import { OrderStatus, PaymentStatus } from '../../types';
 
 export function OrderDetails() {
   const { id } = useParams();

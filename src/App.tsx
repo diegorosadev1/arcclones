@@ -17,7 +17,7 @@ import { Wishlist } from './pages/Wishlist';
 import { Toaster } from './components/Toaster';
 
 // Admin Imports
-import { AdminLayout } from './admin/components/AdminLayout';
+import { AdminLayout } from './admin/components/layout/AdminLayout';
 import { AdminLogin } from './admin/pages/AdminLogin';
 import { Dashboard } from './admin/pages/Dashboard';
 import { ProductList } from './admin/pages/ProductList';

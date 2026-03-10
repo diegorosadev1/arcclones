@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Search, Bell, User, ChevronDown } from 'lucide-react';
-import { useAdminAuthStore } from '../stores/useAdminAuthStore';
+import { useAdminAuthStore } from '../../stores/useAdminAuthStore';
 
 export function AdminHeader() {
   const { admin } = useAdminAuthStore();
