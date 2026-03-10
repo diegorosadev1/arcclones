@@ -50,7 +50,7 @@ export function Login() {
             <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center">
               <span className="text-white font-display font-bold text-xl">L</span>
             </div>
-            <span className="font-display font-bold text-2xl tracking-tight">LUXE.</span>
+            <span className="font-display font-bold text-2xl tracking-tight">ARC CLONES.</span>
           </Link>
           <h1 className="text-3xl font-display font-bold">Bem-vindo de volta</h1>
           <p className="text-zinc-500 text-sm">Acesse sua conta para gerenciar seus pedidos e favoritos.</p>

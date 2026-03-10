@@ -64,7 +64,7 @@ export function AdminLayout() {
         </main>
 
         <footer className="p-8 border-t border-zinc-800 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-600">
-          LUXE Admin Panel &copy; 2026 - Todos os direitos reservados
+          ARC Admin Panel &copy; 2026 - Todos os direitos reservados
         </footer>
       </div>
     </div>

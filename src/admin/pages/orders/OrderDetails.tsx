@@ -133,7 +133,7 @@ export function OrderDetails() {
                   </div>
                   <div className="flex-1 space-y-1">
                     <h4 className="font-bold text-white">{item.name}</h4>
-                    <p className="text-xs text-zinc-500">SKU: LUXE-{item.productId}</p>
+                    <p className="text-xs text-zinc-500">SKU: ARC-{item.productId}</p>
                   </div>
                   <div className="text-right space-y-1">
                     <p className="text-sm font-bold text-white">R$ {item.price.toLocaleString('pt-BR')}</p>

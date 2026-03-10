@@ -17,10 +17,7 @@ import {
   ArrowRight,
   TrendingUp
 } from 'lucide-react';
-import { MetricCard } from '../components/MetricCard';
-import { useAdminDashboardStore } from '../stores/useAdminDashboardStore';
-import { useAdminOrdersStore } from '../stores/useAdminOrdersStore';
-import { useProductStore } from '../../store/useProductStore';
+
 import { 
   AreaChart, 
   Area, 
@@ -37,6 +34,10 @@ import {
 } from 'recharts';
 import { Link } from 'react-router-dom';
 import { clsx } from 'clsx';
+import { useAdminDashboardStore } from '../../stores/useAdminDashboardStore';
+import { useAdminOrdersStore } from '../../stores/useAdminOrdersStore';
+import { useProductStore } from '@/src/store/useProductStore';
+import { MetricCard } from '../../components/layout/MetricCard';
 
 export function Dashboard() {
   const { metrics, salesData, statusDistribution, fetchDashboardData } = useAdminDashboardStore();
@@ -59,7 +60,7 @@ export function Dashboard() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="space-y-1">
           <h1 className="text-3xl font-display font-bold">Visão Geral</h1>
-          <p className="text-zinc-500 text-sm">Bem-vindo ao painel administrativo da LUXE.</p>
+          <p className="text-zinc-500 text-sm">Bem-vindo ao painel administrativo da ARC CLONES.</p>
         </div>
 
         <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded-full p-1">

@@ -407,7 +407,7 @@ export function Checkout() {
 
             <div className="pt-4 text-center">
               <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Precisa de ajuda com o pagamento?</p>
-              <p className="text-xs text-accent font-bold mt-1 cursor-pointer hover:underline">Falar com Consultor LUXE</p>
+              <p className="text-xs text-accent font-bold mt-1 cursor-pointer hover:underline">Falar com Consultor ARC</p>
             </div>
           </div>
         </div>

@@ -3,57 +3,63 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  ChevronLeft, 
-  Save, 
-  X, 
-  Trash2, 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  ChevronLeft,
+  Save,
+  X,
+  Trash2,
   Edit,
   LayoutGrid,
   Settings,
   Search,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react';
-import { Product } from '../../../types';
-import { useProductStore } from '../../../store/useProductStore';
-import { ProductImageGallery } from './ProductImageGallery';
-import { ProductInfoFields } from './ProductInfoFields';
-import { ProductPreviewCard } from './ProductPreviewCard';
-import { motion, AnimatePresence } from 'motion/react';
-import { clsx } from 'clsx';
+  AlertCircle,
+} from "lucide-react";
+import { Product } from "../../../types";
+import { useProductStore } from "../../../store/useProductStore";
+import { ProductImageGallery } from "./ProductImageGallery";
+import { ProductInfoFields } from "./ProductInfoFields";
+import { ProductPreviewCard } from "./ProductPreviewCard";
+import { motion, AnimatePresence } from "motion/react";
+import { clsx } from "clsx";
+import toast from "react-hot-toast";
 
 interface ProductFormLayoutProps {
-  mode: 'view' | 'edit' | 'create';
+  mode: "view" | "edit" | "create";
   initialData?: Product;
 }
 
-export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps) {
+export function ProductFormLayout({
+  mode,
+  initialData,
+}: ProductFormLayoutProps) {
   const navigate = useNavigate();
   const { createProduct, updateProduct, deleteProduct } = useProductStore();
-  
-  const [formData, setFormData] = useState<Partial<Product>>(initialData || {
-    name: '',
-    brand: '',
-    category: 'Watches',
-    price: 0,
-    promoPrice: undefined,
-    description: '',
-    images: [],
-    rating: 4.5,
-    stock: 0,
-    sku: `LX-${Math.floor(Math.random() * 90000) + 10000}`,
-    material: '',
-    color: '',
-    featured: false,
-    newArrival: true,
-    bestSeller: false,
-  });
+
+  const [formData, setFormData] = useState<Partial<Product>>(
+    initialData || {
+      name: "",
+      brand: "",
+      category: "Watches",
+      price: 0,
+      promoPrice: undefined,
+      description: "",
+      images: [],
+      rating: 4.5,
+      stock: 0,
+      sku: `LX-${Math.floor(Math.random() * 90000) + 10000}`,
+      material: "",
+      color: "",
+      featured: false,
+      newArrival: true,
+      bestSeller: false,
+    },
+  );
 
   const [activeImage, setActiveImage] = useState(0);
-  const [activeTab, setActiveTab] = useState<'info' | 'specs' | 'seo'>('info');
+  const [activeTab, setActiveTab] = useState<"info" | "specs" | "seo">("info");
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
@@ -64,45 +70,53 @@ export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps)
 
   const validate = () => {
     const newErrors: string[] = [];
-    if (!formData.name) newErrors.push('Nome do produto é obrigatório');
-    if (!formData.price || formData.price <= 0) newErrors.push('Preço deve ser maior que zero');
-    if (!formData.category) newErrors.push('Categoria é obrigatória');
+    if (!formData.name) newErrors.push("Nome do produto é obrigatório");
+    if (!formData.price || formData.price <= 0)
+      newErrors.push("Preço deve ser maior que zero");
+    if (!formData.category) newErrors.push("Categoria é obrigatória");
     setErrors(newErrors);
     return newErrors.length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
 
-    if (mode === 'create') {
-      createProduct(formData as Omit<Product, 'id'>);
-    } else if (mode === 'edit' && initialData?.id) {
-      updateProduct(initialData.id, formData);
+    if (mode === "create") {
+      await createProduct(formData as Omit<Product, "id">);
+      toast.success("Produto criado com sucesso");
+    } else if (mode === "edit" && initialData?.id) {
+      await updateProduct(initialData.id, formData);
+      toast.success("Produto atualizado com sucesso");
     }
-    navigate('/admin/produtos');
+
+    navigate("/admin/produtos");
   };
 
-  const handleDelete = () => {
-    if (initialData?.id && confirm('Tem certeza que deseja excluir este produto?')) {
-      deleteProduct(initialData.id);
-      navigate('/admin/produtos');
+  const handleDelete = async () => {
+    if (
+      initialData?.id &&
+      confirm("Tem certeza que deseja excluir este produto?")
+    ) {
+      await deleteProduct(initialData.id);
+      toast.success("Produto removido com sucesso");
+      navigate("/admin/produtos");
     }
   };
 
   const handleAddImage = () => {
-    const url = prompt('Insira a URL da imagem:');
+    const url = prompt("Insira a URL da imagem:");
     if (url) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        images: [...(prev.images || []), url]
+        images: [...(prev.images || []), url],
       }));
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      images: (prev.images || []).filter((_, i) => i !== index)
+      images: (prev.images || []).filter((_, i) => i !== index),
     }));
     if (activeImage >= (formData.images?.length || 1) - 1) {
       setActiveImage(Math.max(0, (formData.images?.length || 1) - 2));
@@ -114,27 +128,41 @@ export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps)
       {/* Header & Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/admin/produtos')} className="p-3 rounded-xl border border-zinc-800 hover:bg-zinc-900 transition-colors">
+          <button
+            onClick={() => navigate("/admin/produtos")}
+            className="p-3 rounded-xl border border-zinc-800 hover:bg-zinc-900 transition-colors"
+          >
             <ChevronLeft size={20} />
           </button>
           <div className="space-y-1">
             <h1 className="text-3xl font-display font-bold">
-              {mode === 'create' ? 'Novo Produto' : mode === 'edit' ? 'Editar Produto' : 'Detalhes do Produto'}
+              {mode === "create"
+                ? "Novo Produto"
+                : mode === "edit"
+                  ? "Editar Produto"
+                  : "Detalhes do Produto"}
             </h1>
             <p className="text-zinc-500 text-sm">
-              {mode === 'create' ? 'Cadastre um novo item no catálogo.' : `Gerenciando: ${formData.name}`}
+              {mode === "create"
+                ? "Cadastre um novo item no catálogo."
+                : `Gerenciando: ${formData.name}`}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          {mode === 'view' ? (
+          {mode === "view" ? (
             <>
-              <button onClick={handleDelete} className="p-4 rounded-xl border border-red-500/20 text-red-500 hover:bg-red-500/5 transition-colors">
+              <button
+                onClick={handleDelete}
+                className="p-4 rounded-xl border border-red-500/20 text-red-500 hover:bg-red-500/5 transition-colors"
+              >
                 <Trash2 size={20} />
               </button>
-              <button 
-                onClick={() => navigate(`/admin/produtos/${initialData?.id}/editar`)} 
+              <button
+                onClick={() =>
+                  navigate(`/admin/produtos/${initialData?.id}/editar`)
+                }
                 className="btn-outline px-8 py-4 text-sm font-bold uppercase tracking-widest flex items-center gap-2"
               >
                 <Edit size={20} /> Editar Produto
@@ -142,11 +170,18 @@ export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps)
             </>
           ) : (
             <>
-              <button onClick={() => navigate('/admin/produtos')} className="p-4 rounded-xl border border-zinc-800 text-zinc-500 hover:bg-zinc-900 transition-colors">
+              <button
+                onClick={() => navigate("/admin/produtos")}
+                className="p-4 rounded-xl border border-zinc-800 text-zinc-500 hover:bg-zinc-900 transition-colors"
+              >
                 <X size={20} />
               </button>
-              <button onClick={handleSave} className="btn-primary px-8 py-4 text-sm font-bold uppercase tracking-widest flex items-center gap-2">
-                <Save size={20} /> {mode === 'create' ? 'Criar Produto' : 'Salvar Alterações'}
+              <button
+                onClick={handleSave}
+                className="btn-primary px-8 py-4 text-sm font-bold uppercase tracking-widest flex items-center gap-2"
+              >
+                <Save size={20} />{" "}
+                {mode === "create" ? "Criar Produto" : "Salvar Alterações"}
               </button>
             </>
           )}
@@ -164,9 +199,13 @@ export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps)
           >
             <AlertCircle className="text-red-500 shrink-0" />
             <div className="space-y-1">
-              <p className="text-sm font-bold text-red-500">Por favor, corrija os seguintes erros:</p>
+              <p className="text-sm font-bold text-red-500">
+                Por favor, corrija os seguintes erros:
+              </p>
               <ul className="text-xs text-red-400 list-disc pl-4">
-                {errors.map((err, i) => <li key={i}>{err}</li>)}
+                {errors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
               </ul>
             </div>
           </motion.div>
@@ -175,7 +214,7 @@ export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps)
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         {/* Left Column: Visual Preview (Public Style) */}
-        <ProductImageGallery 
+        <ProductImageGallery
           images={formData.images || []}
           activeImage={activeImage}
           onActiveImageChange={setActiveImage}
@@ -189,16 +228,18 @@ export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps)
           {/* Tabs */}
           <div className="flex border-b border-zinc-800">
             {[
-              { id: 'info', label: 'Informações', icon: LayoutGrid },
-              { id: 'specs', label: 'Especificações', icon: Settings },
-              { id: 'seo', label: 'SEO', icon: Search },
+              { id: "info", label: "Informações", icon: LayoutGrid },
+              { id: "specs", label: "Especificações", icon: Settings },
+              { id: "seo", label: "SEO", icon: Search },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={clsx(
                   "flex items-center gap-2 px-6 py-4 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 border-b-2",
-                  activeTab === tab.id ? "border-accent text-accent" : "border-transparent text-zinc-500 hover:text-zinc-300"
+                  activeTab === tab.id
+                    ? "border-accent text-accent"
+                    : "border-transparent text-zinc-500 hover:text-zinc-300",
                 )}
               >
                 <tab.icon size={14} />
@@ -215,9 +256,11 @@ export function ProductFormLayout({ mode, initialData }: ProductFormLayoutProps)
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
               >
-                <ProductInfoFields 
+                <ProductInfoFields
                   formData={formData}
-                  onChange={(fields) => setFormData(prev => ({ ...prev, ...fields }))}
+                  onChange={(fields) =>
+                    setFormData((prev) => ({ ...prev, ...fields }))
+                  }
                   mode={mode}
                   activeTab={activeTab}
                 />

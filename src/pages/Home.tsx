@@ -34,7 +34,7 @@ export function Home() {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1920"
+            src="https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Hero Background"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -131,7 +131,7 @@ export function Home() {
           {[
             {
               name: "Relógios",
-              img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
+              img: "https://images.unsplash.com/photo-1734776576464-30551c357fd6?q=80&w=1372&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
               path: "/catalog?category=Watches",
             },
             {
@@ -141,12 +141,12 @@ export function Home() {
             },
             {
               name: "Óculos",
-              img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=800",
+              img: "https://images.unsplash.com/photo-1654257650833-b7398115275a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8JUMzJUIzY3Vsb3MlMjBwcmV0b3N8ZW58MHx8MHx8fDA%3D",
               path: "/catalog?category=Glasses",
             },
             {
               name: "Joias",
-              img: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800",
+              img: "https://images.unsplash.com/photo-1721807550979-6e662d370e92?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
               path: "/catalog?category=Jewelry",
             },
           ].map((cat, i) => (
@@ -208,7 +208,7 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-3xl md:text-5xl font-display font-bold">
-              A Experiência LUXE
+              A Experiência ar
             </h2>
             <p className="text-zinc-500">
               Por que somos a escolha número um em acessórios de luxo.
@@ -313,7 +313,7 @@ export function Home() {
             O Que Dizem Nossos Clientes
           </h2>
           <p className="text-zinc-500">
-            A satisfação de quem já viveu a experiência LUXE.
+            A satisfação de quem já viveu a experiência ARC CLONES.
           </p>
         </div>
 

@@ -42,7 +42,7 @@ export function AdminSidebar() {
         <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
           <span className="text-white font-display font-bold text-lg">L</span>
         </div>
-        <span className="font-display font-bold text-xl tracking-tight text-white">LUXE <span className="text-accent text-xs uppercase tracking-widest ml-1">Admin</span></span>
+        <span className="font-display font-bold text-xl tracking-tight text-white">ARC <span className="text-accent text-xs uppercase tracking-widest ml-1">Admin</span></span>
       </div>
 
       <nav className="flex-grow p-4 space-y-2 overflow-y-auto">

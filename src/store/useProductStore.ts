@@ -12,12 +12,11 @@ interface ProductStoreState {
   products: Product[];
   isLoading: boolean;
   fetchProducts: () => Promise<void>;
-  addProduct: (product: Omit<Product, "id">) => void;
-  createProduct: (product: Omit<Product, "id">) => void;
-  updateProduct: (id: string, product: Partial<Product>) => void;
-  deleteProduct: (id: string) => void;
-  toggleStatus: (id: string) => void;
-  toggleFeatured: (id: string) => void;
+  createProduct: (product: Omit<Product, "id">) => Promise<void>;
+  updateProduct: (id: string, product: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  toggleStatus: (id: string) => Promise<void>;
+  toggleFeatured: (id: string) => Promise<void>;
   getProductById: (id: string) => Product | undefined;
 }
 
@@ -82,48 +81,177 @@ export const useProductStore = create<ProductStoreState>()(
         });
       },
 
-      addProduct: (newProduct) => {
-        const productWithId = {
-          ...newProduct,
-          id: Math.random().toString(36).substr(2, 9),
-        };
-        set((state) => ({ products: [productWithId, ...state.products] }));
+      createProduct: async (newProduct) => {
+        const { images, promoPrice, newArrival, bestSeller, ...productData } =
+          newProduct;
+
+        const { data, error } = await supabase
+          .from("products")
+          .insert({
+            name: productData.name,
+            category: productData.category,
+            price: productData.price,
+            promo_price: promoPrice ?? null,
+            description: productData.description,
+            rating: productData.rating,
+            stock: productData.stock,
+            sku: productData.sku,
+            brand: productData.brand,
+            material: productData.material,
+            color: productData.color,
+            featured: productData.featured ?? false,
+            new_arrival: newArrival ?? false,
+            best_seller: bestSeller ?? false,
+          })
+          .select()
+          .single();
+
+        if (error || !data) {
+          console.error("Erro ao criar produto:", error);
+          return;
+        }
+
+        if (images?.length) {
+          const imageRows = images.map((imageUrl, index) => ({
+            product_id: data.id,
+            image_url: imageUrl,
+            position: index,
+          }));
+
+          const { error: imagesError } = await supabase
+            .from("product_images")
+            .insert(imageRows);
+
+          if (imagesError) {
+            console.error("Erro ao criar imagens do produto:", imagesError);
+          }
+        }
+
+        await get().fetchProducts();
       },
 
-      createProduct: (newProduct) => {
-        const productWithId = {
-          ...newProduct,
-          id: Math.random().toString(36).substr(2, 9),
-        };
-        set((state) => ({ products: [productWithId, ...state.products] }));
+      updateProduct: async (id, updatedFields) => {
+        const { images, promoPrice, newArrival, bestSeller, ...rest } =
+          updatedFields;
+
+        const payload: any = {};
+
+        if (rest.name !== undefined) payload.name = rest.name;
+        if (rest.category !== undefined) payload.category = rest.category;
+        if (rest.price !== undefined) payload.price = rest.price;
+        if (updatedFields.promoPrice !== undefined)
+          payload.promo_price = updatedFields.promoPrice ?? null;
+        if (rest.description !== undefined)
+          payload.description = rest.description;
+        if (rest.rating !== undefined) payload.rating = rest.rating;
+        if (rest.stock !== undefined) payload.stock = rest.stock;
+        if (rest.sku !== undefined) payload.sku = rest.sku;
+        if (rest.brand !== undefined) payload.brand = rest.brand;
+        if (rest.material !== undefined) payload.material = rest.material;
+        if (rest.color !== undefined) payload.color = rest.color;
+        if (rest.featured !== undefined) payload.featured = rest.featured;
+        if (updatedFields.newArrival !== undefined)
+          payload.new_arrival = updatedFields.newArrival;
+        if (updatedFields.bestSeller !== undefined)
+          payload.best_seller = updatedFields.bestSeller;
+
+        const { error } = await supabase
+          .from("products")
+          .update(payload)
+          .eq("id", id);
+
+        if (error) {
+          console.error("Erro ao atualizar produto:", error);
+          return;
+        }
+
+        if (images) {
+          const { error: deleteImagesError } = await supabase
+            .from("product_images")
+            .delete()
+            .eq("product_id", id);
+
+          if (deleteImagesError) {
+            console.error("Erro ao limpar imagens antigas:", deleteImagesError);
+            return;
+          }
+
+          if (images.length) {
+            const imageRows = images.map((imageUrl, index) => ({
+              product_id: id,
+              image_url: imageUrl,
+              position: index,
+            }));
+
+            const { error: insertImagesError } = await supabase
+              .from("product_images")
+              .insert(imageRows);
+
+            if (insertImagesError) {
+              console.error("Erro ao recriar imagens:", insertImagesError);
+              return;
+            }
+          }
+        }
+
+        await get().fetchProducts();
       },
 
-      updateProduct: (id, updatedFields) => {
-        set((state) => ({
-          products: state.products.map((p) =>
-            p.id === id ? { ...p, ...updatedFields } : p,
-          ),
-        }));
-      },
+      deleteProduct: async (id) => {
+        const { error } = await supabase.from("products").delete().eq("id", id);
 
-      deleteProduct: (id) => {
+        if (error) {
+          console.error("Erro ao deletar produto:", error);
+          return;
+        }
+
         set((state) => ({
           products: state.products.filter((p) => p.id !== id),
         }));
       },
 
-      toggleStatus: (id) => {
+      toggleStatus: async (id) => {
+        const product = get().products.find((p) => p.id === id);
+        if (!product) return;
+
+        const nextStock = product.stock > 0 ? 0 : 10;
+
+        const { error } = await supabase
+          .from("products")
+          .update({ stock: nextStock })
+          .eq("id", id);
+
+        if (error) {
+          console.error("Erro ao atualizar estoque:", error);
+          return;
+        }
+
         set((state) => ({
           products: state.products.map((p) =>
-            p.id === id ? { ...p, stock: p.stock > 0 ? 0 : 10 } : p,
+            p.id === id ? { ...p, stock: nextStock } : p,
           ),
         }));
       },
 
-      toggleFeatured: (id) => {
+      toggleFeatured: async (id) => {
+        const product = get().products.find((p) => p.id === id);
+        if (!product) return;
+
+        const nextFeatured = !product.featured;
+
+        const { error } = await supabase
+          .from("products")
+          .update({ featured: nextFeatured })
+          .eq("id", id);
+
+        if (error) {
+          console.error("Erro ao atualizar featured:", error);
+          return;
+        }
+
         set((state) => ({
           products: state.products.map((p) =>
-            p.id === id ? { ...p, featured: !p.featured } : p,
+            p.id === id ? { ...p, featured: nextFeatured } : p,
           ),
         }));
       },

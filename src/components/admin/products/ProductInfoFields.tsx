@@ -196,8 +196,8 @@ export function ProductInfoFields({ formData, onChange, mode, activeTab }: Produ
           <div className="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Preview Google</h4>
             <div className="space-y-1">
-              <p className="text-blue-400 text-lg hover:underline cursor-pointer">{formData.name || 'Produto'} | LUXE Premium</p>
-              <p className="text-emerald-500 text-xs">https://luxe.com/produto/{formData.sku?.toLowerCase() || 'sku'}</p>
+              <p className="text-blue-400 text-lg hover:underline cursor-pointer">{formData.name || 'Produto'} | ARC CLONES Premium</p>
+              <p className="text-emerald-500 text-xs">https://arcclones.com/produto/{formData.sku?.toLowerCase() || 'sku'}</p>
               <p className="text-zinc-500 text-xs line-clamp-2">{formData.description || 'Descrição do produto para os resultados de busca.'}</p>
             </div>
           </div>

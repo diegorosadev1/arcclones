@@ -10,7 +10,7 @@ import { motion } from 'motion/react';
 import { useAdminAuthStore } from '../../stores/useAdminAuthStore';
 
 export function AdminLogin() {
-  const [email, setEmail] = useState('admin@luxe.com');
+  const [email, setEmail] = useState('admin@arc.com');
   const [password, setPassword] = useState('admin123');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -59,7 +59,7 @@ export function AdminLogin() {
               <span className="text-white font-display font-bold text-2xl">L</span>
             </div>
             <div className="text-left">
-              <span className="font-display font-bold text-2xl tracking-tight block">LUXE.</span>
+              <span className="font-display font-bold text-2xl tracking-tight block">ARC CLONES.</span>
               <span className="text-[10px] font-bold uppercase tracking-widest text-accent">Painel Administrativo</span>
             </div>
           </div>
@@ -88,7 +88,7 @@ export function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-accent transition-colors text-white"
-                placeholder="admin@luxe.com"
+                placeholder="admin@arc.com"
                 required
               />
             </div>

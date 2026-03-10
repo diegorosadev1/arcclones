@@ -18,13 +18,14 @@ import { Toaster } from './components/Toaster';
 
 // Admin Imports
 import { AdminLayout } from './admin/components/layout/AdminLayout';
-import { AdminLogin } from './admin/pages/AdminLogin';
-import { Dashboard } from './admin/pages/Dashboard';
-import { ProductList } from './admin/pages/ProductList';
-import { ProductForm } from './admin/pages/ProductForm';
-import { OrderList } from './admin/pages/OrderList';
-import { OrderDetails } from './admin/pages/OrderDetails';
-import { UserList } from './admin/pages/UserList';
+import { AdminLogin } from './admin/pages/login/AdminLogin';
+import { Dashboard } from './admin/pages/dashboard/Dashboard';
+import { ProductList } from './admin/pages/products/ProductList';
+import { ProductForm } from './admin/pages/products/ProductForm';
+import { OrderList } from './admin/pages/login/OrderList';
+import { OrderDetails } from './admin/pages/orders/OrderDetails';
+import { UserList } from './admin/pages/users/UserList';
+
 
 export default function App() {
   return (
