@@ -38,11 +38,16 @@ export function AdminSidebar() {
 
   return (
     <aside className="w-64 h-screen bg-luxury-black border-r border-zinc-800 fixed left-0 top-0 z-50 flex flex-col">
-      <div className="p-6 border-b border-zinc-800 flex items-center gap-3">
-        <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-          <span className="text-white font-display font-bold text-lg">L</span>
-        </div>
-        <span className="font-display font-bold text-xl tracking-tight text-white">ARC <span className="text-accent text-xs uppercase tracking-widest ml-1">Admin</span></span>
+      <div className="flex flex-col p-6 border-b border-zinc-800 flex items-center ">
+       {/* Logo */}
+        <Link to="/" className="flex items-center gap-2">
+          <img
+            src="/assets/img/arcclones-logo.png"
+            alt="Arc Clones Logo"
+            className="h-20 w-auto"
+          />
+        </Link>
+        <span className="font-display font-bold text-xl tracking-tight text-white"> <span className="text-accent text-xs uppercase tracking-widest ml-1">Admin</span></span>
       </div>
 
       <nav className="flex-grow p-4 space-y-2 overflow-y-auto">

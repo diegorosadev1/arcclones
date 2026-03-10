@@ -15,8 +15,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useStore } from "../store/useStore";
-import { useWishlistStore } from "../store/useWishlistStore";
+import { useStore } from "../../store/useStore";
+import { useWishlistStore } from "../../store/useWishlistStore";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -255,14 +255,11 @@ function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
         <div className="space-y-6">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center">
-              <span className="text-white font-display font-bold text-xl">
-                L
-              </span>
-            </div>
-            <span className="font-display font-bold text-2xl tracking-tight">
-              ARC CLONES.
-            </span>
+            <img
+              src="/assets/img/arcclones-logo.png"
+              alt="Arc Clones Logo"
+              className="h-25 w-auto"
+            />
           </Link>
           <p className="text-zinc-400 text-sm leading-relaxed">
             A sua boutique de luxo especializada em acessórios premium.
