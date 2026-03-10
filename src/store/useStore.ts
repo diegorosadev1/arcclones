@@ -1,0 +1,112 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { User, CartItem, Product } from '../types';
+
+interface Notification {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
+interface StoreState {
+  user: User | null;
+  cart: CartItem[];
+  wishlist: string[];
+  notifications: Notification[];
+  setUser: (user: User | null) => void;
+  addToCart: (product: Product, quantity?: number) => void;
+  removeFromCart: (productId: string) => void;
+  updateCartQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
+  toggleWishlist: (productId: string) => void;
+  isInWishlist: (productId: string) => boolean;
+  addNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
+  removeNotification: (id: string) => void;
+}
+
+export const useStore = create<StoreState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      cart: [],
+      wishlist: [],
+      notifications: [],
+
+      setUser: (user) => set({ user }),
+
+      addToCart: (product, quantity = 1) => {
+        const cart = get().cart;
+        const existingItem = cart.find((item) => item.id === product.id);
+
+        if (existingItem) {
+          set({
+            cart: cart.map((item) =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + quantity }
+                : item
+            ),
+          });
+        } else {
+          set({ cart: [...cart, { ...product, quantity }] });
+        }
+        get().addNotification(`${product.name} adicionado ao carrinho`, 'success');
+      },
+
+      removeFromCart: (productId) => {
+        set({ cart: get().cart.filter((item) => item.id !== productId) });
+        get().addNotification('Item removido do carrinho', 'info');
+      },
+
+      updateCartQuantity: (productId, quantity) => {
+        if (quantity <= 0) {
+          get().removeFromCart(productId);
+          return;
+        }
+        set({
+          cart: get().cart.map((item) =>
+            item.id === productId ? { ...item, quantity } : item
+          ),
+        });
+      },
+
+      clearCart: () => set({ cart: [] }),
+
+      toggleWishlist: (productId) => {
+        const wishlist = get().wishlist;
+        const isIn = wishlist.includes(productId);
+        if (isIn) {
+          set({ wishlist: wishlist.filter((id) => id !== productId) });
+          get().addNotification('Removido dos favoritos', 'info');
+        } else {
+          set({ wishlist: [...wishlist, productId] });
+          get().addNotification('Adicionado aos favoritos', 'success');
+        }
+      },
+
+      isInWishlist: (productId) => get().wishlist.includes(productId),
+
+      addNotification: (message, type = 'info') => {
+        const id = Math.random().toString(36).substring(7);
+        set({ notifications: [...get().notifications, { id, message, type }] });
+        setTimeout(() => get().removeNotification(id), 3000);
+      },
+
+      removeNotification: (id) => {
+        set({ notifications: get().notifications.filter((n) => n.id !== id) });
+      },
+    }),
+    {
+      name: 'luxury-store-storage',
+      partialize: (state) => ({
+        user: state.user,
+        cart: state.cart,
+        wishlist: state.wishlist,
+      }),
+    }
+  )
+);

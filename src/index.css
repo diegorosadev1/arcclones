@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #e11d48;
+  --color-accent-hover: #be123c;
+  --color-luxury-gold: #d4af37;
+  --color-luxury-black: #0a0a0c;
+  --color-luxury-card: #121214;
+  
+  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-luxury-black text-zinc-100 font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent hover:bg-accent-hover text-white px-6 py-3 rounded-full transition-all duration-300 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-3 rounded-full transition-all duration-300 font-medium flex items-center justify-center gap-2;
+  }
+  
+  .btn-outline {
+    @apply border border-zinc-700 hover:border-accent hover:text-accent text-zinc-300 px-6 py-3 rounded-full transition-all duration-300 font-medium flex items-center justify-center gap-2;
+  }
+
+  .glass-card {
+    @apply bg-luxury-card border border-zinc-800/50 rounded-2xl overflow-hidden hover:border-zinc-700 transition-all duration-300;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-luxury-black;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-800 rounded-full hover:bg-zinc-700;
+}
