@@ -1,12 +1,12 @@
-type SkeletonProps = {
-  className?: string;
-};
+import type { HTMLAttributes } from "react";
 
-export function Skeleton({ className = "" }: SkeletonProps) {
+type SkeletonProps = HTMLAttributes<HTMLDivElement>;
+
+export function Skeleton({ className = "", ...props }: SkeletonProps) {
   return (
     <div
       className={`animate-pulse rounded-xl bg-zinc-800/70 ${className}`}
-      aria-hidden="true"
+      {...props}
     />
   );
 }

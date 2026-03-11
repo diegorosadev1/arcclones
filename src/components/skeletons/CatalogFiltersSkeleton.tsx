@@ -6,7 +6,7 @@ export function CatalogFiltersSkeleton() {
       <div className="space-y-6">
         <Skeleton className="h-7 w-32" />
         <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 5 }, (_, index) => (
             <Skeleton key={index} className="h-4 w-32" />
           ))}
         </div>
