@@ -47,7 +47,7 @@ export function AdminSidebar() {
             className="h-20 w-auto"
           />
         </Link>
-        <span className="font-display font-bold text-xl tracking-tight text-white"> <span className="text-accent text-xs uppercase tracking-widest ml-1">Admin</span></span>
+        <span className="font-display font-bold text-xl tracking-tight text-white"> <span className="text-accent text-xs uppercase tracking-widest ml-1">Painel Administrativo</span></span>
       </div>
 
       <nav className="flex-grow p-4 space-y-2 overflow-y-auto">
