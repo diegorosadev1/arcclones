@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -14,7 +14,6 @@ import {
   LayoutGrid,
   Settings,
   Search,
-  CheckCircle,
   AlertCircle,
 } from "lucide-react";
 import { Product } from "../../../types";
@@ -25,6 +24,7 @@ import { ProductPreviewCard } from "./ProductPreviewCard";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import toast from "react-hot-toast";
+import { supabase } from "../../../lib/supabase";
 
 interface ProductFormLayoutProps {
   mode: "view" | "edit" | "create";
@@ -61,6 +61,8 @@ export function ProductFormLayout({
   const [activeImage, setActiveImage] = useState(0);
   const [activeTab, setActiveTab] = useState<"info" | "specs" | "seo">("info");
   const [errors, setErrors] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -70,10 +72,13 @@ export function ProductFormLayout({
 
   const validate = () => {
     const newErrors: string[] = [];
+
     if (!formData.name) newErrors.push("Nome do produto é obrigatório");
-    if (!formData.price || formData.price <= 0)
+    if (!formData.price || formData.price <= 0) {
       newErrors.push("Preço deve ser maior que zero");
+    }
     if (!formData.category) newErrors.push("Categoria é obrigatória");
+
     setErrors(newErrors);
     return newErrors.length === 0;
   };
@@ -103,13 +108,64 @@ export function ProductFormLayout({
     }
   };
 
-  const handleAddImage = () => {
-    const url = prompt("Insira a URL da imagem:");
-    if (url) {
-      setFormData((prev) => ({
-        ...prev,
-        images: [...(prev.images || []), url],
-      }));
+  const handleAddImageClick = () => {
+    if (mode === "view" || isUploading) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2)}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("product_images")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("product_images")
+        .getPublicUrl(filePath);
+
+      const publicUrl = publicUrlData?.publicUrl;
+
+      if (!publicUrl) {
+        throw new Error("Não foi possível gerar a URL pública da imagem");
+      }
+
+      setFormData((prev) => {
+        const nextImages = [...(prev.images || []), publicUrl];
+        setActiveImage(nextImages.length - 1);
+
+        return {
+          ...prev,
+          images: nextImages,
+        };
+      });
+
+      toast.success("Imagem enviada com sucesso");
+    } catch (error) {
+      console.error("Erro ao enviar imagem:", error);
+      toast.error("Erro ao enviar imagem");
+    } finally {
+      setIsUploading(false);
+      event.target.value = "";
     }
   };
 
@@ -118,6 +174,7 @@ export function ProductFormLayout({
       ...prev,
       images: (prev.images || []).filter((_, i) => i !== index),
     }));
+
     if (activeImage >= (formData.images?.length || 1) - 1) {
       setActiveImage(Math.max(0, (formData.images?.length || 1) - 2));
     }
@@ -125,7 +182,14 @@ export function ProductFormLayout({
 
   return (
     <div className="space-y-12 pb-24">
-      {/* Header & Actions */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <button
@@ -134,6 +198,7 @@ export function ProductFormLayout({
           >
             <ChevronLeft size={20} />
           </button>
+
           <div className="space-y-1">
             <h1 className="text-3xl font-display font-bold">
               {mode === "create"
@@ -142,11 +207,16 @@ export function ProductFormLayout({
                   ? "Editar Produto"
                   : "Detalhes do Produto"}
             </h1>
+
             <p className="text-zinc-500 text-sm">
               {mode === "create"
                 ? "Cadastre um novo item no catálogo."
                 : `Gerenciando: ${formData.name}`}
             </p>
+
+            {isUploading && (
+              <p className="text-xs text-amber-400">Enviando imagem...</p>
+            )}
           </div>
         </div>
 
@@ -159,6 +229,7 @@ export function ProductFormLayout({
               >
                 <Trash2 size={20} />
               </button>
+
               <button
                 onClick={() =>
                   navigate(`/admin/produtos/${initialData?.id}/editar`)
@@ -176,11 +247,13 @@ export function ProductFormLayout({
               >
                 <X size={20} />
               </button>
+
               <button
                 onClick={handleSave}
-                className="btn-primary px-8 py-4 text-sm font-bold uppercase tracking-widest flex items-center gap-2"
+                disabled={isUploading}
+                className="btn-primary px-8 py-4 text-sm font-bold uppercase tracking-widest flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Save size={20} />{" "}
+                <Save size={20} />
                 {mode === "create" ? "Criar Produto" : "Salvar Alterações"}
               </button>
             </>
@@ -188,7 +261,6 @@ export function ProductFormLayout({
         </div>
       </div>
 
-      {/* Validation Errors */}
       <AnimatePresence>
         {errors.length > 0 && (
           <motion.div
@@ -213,19 +285,16 @@ export function ProductFormLayout({
       </AnimatePresence>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-        {/* Left Column: Visual Preview (Public Style) */}
         <ProductImageGallery
           images={formData.images || []}
           activeImage={activeImage}
           onActiveImageChange={setActiveImage}
-          onAddImage={handleAddImage}
+          onAddImage={handleAddImageClick}
           onRemoveImage={handleRemoveImage}
           mode={mode}
         />
 
-        {/* Right Column: Form Inputs */}
         <div className="space-y-8">
-          {/* Tabs */}
           <div className="flex border-b border-zinc-800">
             {[
               { id: "info", label: "Informações", icon: LayoutGrid },
@@ -234,7 +303,7 @@ export function ProductFormLayout({
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as "info" | "specs" | "seo")}
                 className={clsx(
                   "flex items-center gap-2 px-6 py-4 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 border-b-2",
                   activeTab === tab.id
@@ -270,7 +339,6 @@ export function ProductFormLayout({
         </div>
       </div>
 
-      {/* Bottom Preview */}
       <div className="pt-12 border-t border-zinc-800">
         <ProductPreviewCard product={formData} />
       </div>
