@@ -268,9 +268,9 @@ export function ProductList() {
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="bg-transparent border-none focus:ring-0 text-xs font-bold uppercase tracking-widest text-zinc-300 cursor-pointer"
             >
-              <option value="all">Todas Categorias</option>
+              <option value="all">Todas as Categorias</option>
               <option value="Watches">Relógios</option>
-              <option value="Shoulder Bags">Bolsas</option>
+              <option value="Shoulder Bags">Bolsas de Ombro</option>
               <option value="Glasses">Óculos</option>
               <option value="Jewelry">Joias</option>
             </select>
