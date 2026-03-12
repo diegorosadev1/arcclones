@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading, isAdmin } = useAuth();
@@ -15,8 +15,16 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user || !profile) {
+  if (!user) {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  }
+
+  if (!profile) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-black">
+        <Loader2 className="w-12 h-12 text-accent animate-spin" />
+      </div>
+    );
   }
 
   if (!isAdmin) {

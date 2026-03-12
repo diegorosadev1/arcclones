@@ -102,15 +102,10 @@ export function Account() {
     if (profile) {
       fetchOrders(profile.id);
       fetchAddresses(profile.id);
-    }
-  }, [profile, fetchOrders, fetchAddresses]);
-
-  useEffect(() => {
-    if (profile) {
       setName(profile.name || "");
       setEmail(profile.email || "");
     }
-  }, [profile]);
+  }, [profile, fetchOrders, fetchAddresses]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,22 +159,24 @@ export function Account() {
 
   const handleVerifyCurrentPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentPassword) return;
+    if (!currentPassword || !profile?.email) return;
 
     setIsVerifying(true);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email: profile?.email || "",
+        email: profile.email,
         password: currentPassword,
       });
 
-      if (error) throw new Error("Senha atual incorreta.");
+      if (error) {
+        throw new Error("Senha atual incorreta.");
+      }
 
       setIsCurrentPasswordVerified(true);
       addNotification("Senha atual verificada!", "success");
     } catch (error: any) {
-      addNotification(error.message, "error");
+      addNotification(error.message || "Erro ao verificar senha", "error");
     } finally {
       setIsVerifying(false);
     }
@@ -436,6 +433,7 @@ export function Account() {
                       className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
                     />
                   </div>
+
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
                       E-mail
@@ -447,6 +445,7 @@ export function Account() {
                       className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
                     />
                   </div>
+
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
                       CPF
@@ -459,6 +458,7 @@ export function Account() {
                       className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
                     />
                   </div>
+
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
                       Telefone
@@ -537,6 +537,7 @@ export function Account() {
                               {new Date(order.date).toLocaleDateString("pt-BR")}
                             </p>
                           </div>
+
                           <div
                             className={clsx(
                               "px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
@@ -549,6 +550,7 @@ export function Account() {
                           >
                             {order.status}
                           </div>
+
                           <div className="text-right">
                             <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
                               Total
@@ -561,6 +563,7 @@ export function Account() {
                             </p>
                           </div>
                         </div>
+
                         <div className="flex gap-4 overflow-x-auto pb-2">
                           {order.items.map((item, i) => (
                             <div
@@ -576,6 +579,7 @@ export function Account() {
                             </div>
                           ))}
                         </div>
+
                         <div className="flex justify-end gap-4">
                           <button
                             onClick={() => setSelectedOrderId(order.id)}
@@ -583,6 +587,7 @@ export function Account() {
                           >
                             Ver Detalhes
                           </button>
+
                           {order.status !== "Cancelled" && (
                             <button
                               onClick={() => setTrackingOrderId(order.id)}
@@ -623,6 +628,7 @@ export function Account() {
                       Gerencie seus locais de entrega salvos.
                     </p>
                   </div>
+
                   <button
                     onClick={() => {
                       setEditingAddress(undefined);
@@ -693,17 +699,17 @@ export function Account() {
                           >
                             Editar
                           </button>
+
                           <button
                             onClick={() => handleDeleteAddress(address.id)}
                             className="text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors"
                           >
                             Excluir
                           </button>
+
                           {!address.is_default && (
                             <button
-                              onClick={() =>
-                                handleSetPrimaryAddress(address.id)
-                              }
+                              onClick={() => handleSetPrimaryAddress(address.id)}
                               className="text-xs font-bold uppercase tracking-widest text-accent hover:underline ml-auto"
                             >
                               Tornar Principal
@@ -784,6 +790,7 @@ export function Account() {
                       <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
                         Senha Atual
                       </label>
+
                       <div className="relative">
                         <Lock
                           size={18}
@@ -812,6 +819,7 @@ export function Account() {
                         </button>
                       </div>
                     </div>
+
                     <button
                       type="submit"
                       disabled={isVerifying || !currentPassword}
@@ -911,6 +919,7 @@ export function Account() {
                       >
                         Cancelar
                       </button>
+
                       <button
                         type="submit"
                         disabled={isSaving}

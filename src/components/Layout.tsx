@@ -30,7 +30,7 @@ function cn(...inputs: ClassValue[]) {
 
 export function Layout() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-luxury-black text-white">
       <Header />
       <main className="flex-grow">
         <Outlet />
@@ -49,7 +49,7 @@ function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isAuthenticated = Boolean(user && profile);
+  const isAuthenticated = Boolean(user);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -84,7 +84,7 @@ function Header() {
           : "bg-transparent",
       )}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         <button
           className="lg:hidden text-zinc-100"
           onClick={() => setIsMobileMenuOpen(true)}
@@ -92,29 +92,34 @@ function Header() {
           <Menu size={24} />
         </button>
 
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 shrink-0">
           <img
             src="/assets/img/logo.png"
             alt="ARC CLONES"
-            className="w-auto h-50 object-contain"
+            className="w-auto h-35 object-contain"
           />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-accent",
-                location.pathname === link.path
-                  ? "text-accent"
-                  : "text-zinc-400",
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive =
+              link.path === "/"
+                ? location.pathname === "/"
+                : location.pathname === link.path.split("?")[0];
+
+            return (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-accent",
+                  isActive ? "text-accent" : "text-zinc-400",
+                )}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-4 sm:gap-6">
@@ -168,10 +173,10 @@ function Header() {
               <div className="group relative">
                 <Link
                   to="/account"
-                  className="flex items-center gap-2 bg-zinc-800/50 hover:bg-zinc-800 px-3 py-1.5 rounded-full transition-all border border-zinc-700"
+                  className="flex items-center gap-2 bg-zinc-800/50 hover:bg-zinc-800 px-3 py-1.5 rounded-full transition-all border border-zinc-700 min-w-[92px] justify-center"
                 >
                   <User size={18} className="text-accent" />
-                  <span className="hidden sm:block text-xs font-medium">
+                  <span className="hidden sm:block text-xs font-medium text-white">
                     {profile?.name?.split(" ")[0] || "Conta"}
                   </span>
                 </Link>
@@ -226,12 +231,11 @@ function Header() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                    <span className="text-white font-display font-bold text-lg">
-                      L
-                    </span>
-                  </div>
-                  <span className="font-display font-bold text-xl">LUXE.</span>
+                  <img
+                    src="/assets/img/logo.png"
+                    alt="ARC CLONES"
+                    className="w-auto h-10 object-contain"
+                  />
                 </Link>
 
                 <button
@@ -315,12 +319,12 @@ function Footer() {
             <img
               src="/assets/img/logo.png"
               alt="ARC CLONES"
-              className="w-auto h-50 object-contain"
+              className="w-auto h-12 object-contain"
             />
           </Link>
           <p className="text-zinc-400 text-sm leading-relaxed">
-            A sua boutique de luxo especializada em acessórios premium.
-            Qualidade, elegância e exclusividade em cada detalhe.
+            A sua boutique especializada em acessórios premium. Qualidade,
+            elegância e exclusividade em cada detalhe.
           </p>
           <div className="flex items-center gap-4">
             {[1, 2, 3, 4].map((i) => (
@@ -435,7 +439,7 @@ function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between gap-4 text-zinc-500 text-xs">
-        <p>© 2026 LUXE Store. Todos os direitos reservados.</p>
+        <p>© 2026 ARC CLONES. Todos os direitos reservados.</p>
         <div className="flex items-center gap-6">
           <span>Pagamento Seguro:</span>
           <div className="flex gap-2">

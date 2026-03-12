@@ -35,13 +35,15 @@ export function Login() {
   const from = location.state?.from?.pathname || "/";
 
   useEffect(() => {
-    if (!authLoading && user && profile) {
-      if (profile.role === "admin") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate(from, { replace: true });
-      }
+    if (authLoading) return;
+    if (!user) return;
+
+    if (profile?.role === "admin") {
+      navigate("/admin", { replace: true });
+      return;
     }
+
+    navigate(from, { replace: true });
   }, [authLoading, user, profile, navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
