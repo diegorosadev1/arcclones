@@ -5,7 +5,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, CartItem, Product } from '../types';
+import { CartItem, Product } from '../types';
 
 interface Notification {
   id: string;
@@ -14,10 +14,8 @@ interface Notification {
 }
 
 interface StoreState {
-  user: User | null;
   cart: CartItem[];
   notifications: Notification[];
-  setUser: (user: User | null) => void;
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
@@ -29,11 +27,8 @@ interface StoreState {
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
-      user: null,
       cart: [],
       notifications: [],
-
-      setUser: (user) => set({ user }),
 
       addToCart: (product, quantity = 1) => {
         const cart = get().cart;
@@ -85,7 +80,6 @@ export const useStore = create<StoreState>()(
     {
       name: 'luxury-store-storage',
       partialize: (state) => ({
-        user: state.user,
         cart: state.cart,
       }),
     }

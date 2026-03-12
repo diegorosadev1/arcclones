@@ -9,10 +9,11 @@ import {
   LogOut,
   ChevronRight,
 } from "lucide-react";
-import { React, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useStore } from "../../store/useStore";
 import { useWishlistStore } from "../../store/useWishlistStore";
+import { useAuth } from "../../auth/useAuth";
 import { cn } from "./utils";
 
 const navLinks = [
@@ -24,8 +25,9 @@ const navLinks = [
 ];
 
 export function Header() {
-  const { cart, user, setUser } = useStore();
+  const { cart } = useStore();
   const { wishlist } = useWishlistStore();
+  const { user, logout } = useAuth();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,8 +50,8 @@ export function Header() {
     [cart],
   );
 
-  const handleLogout = () => {
-    setUser(null);
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 
@@ -63,14 +65,14 @@ export function Header() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4",
         isScrolled
-          ? "bg-luxury-black/90 backdrop-blur-md border-b border-zinc-800"
+          ? "bg-luxury-black/900 backdrop-blur-md border-b border-zinc-800"
           : "bg-transparent",
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <button
           type="button"
-          className="lg:hidden text-zinc-100"
+          className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-900/80 border border-zinc-700 shadow-lg text-zinc-100 hover:shadow-xl hover:-translate-y-0.5 transition-all"
           onClick={() => setIsMobileMenuOpen(true)}
           aria-label="Abrir menu"
         >
@@ -232,7 +234,7 @@ function IconLink({
   label,
 }: {
   to: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   badgeCount?: number;
   label: string;
 }) {
@@ -258,7 +260,7 @@ function UserMenu({
   onLogout,
 }: {
   userName: string;
-  onLogout: () => void;
+  onLogout: () => void | Promise<void>;
 }) {
   return (
     <div className="group relative">
@@ -283,7 +285,7 @@ function UserMenu({
 
           <button
             type="button"
-            onClick={onLogout}
+            onClick={() => void onLogout()}
             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors mt-1"
           >
             <LogOut size={16} /> Sair

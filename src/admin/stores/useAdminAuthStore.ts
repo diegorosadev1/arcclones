@@ -22,7 +22,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
       isAuthenticated: false,
       login: async (email, password) => {
         // Mock login logic
-        if (email === 'admin@arc.com' && password === 'admin123') {
+        if (email === 'admin@luxe.com' && password === 'admin123') {
           set({ admin: mockAdminUser, isAuthenticated: true });
         } else {
           throw new Error('Credenciais inválidas');
@@ -31,7 +31,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
       logout: () => set({ admin: null, isAuthenticated: false }),
     }),
     {
-      name: 'arc-admin-auth',
+      name: 'luxe-admin-auth',
     }
   )
 );

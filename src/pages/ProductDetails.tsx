@@ -22,7 +22,7 @@ export function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
 
-  const product = useMemo(() => products.find(p => p.id === id), [id, products]);
+  const product = useMemo(() => (Array.isArray(products) ? products.find(p => p.id === id) : null), [id, products]);
 
   if (!product) {
     return (
@@ -33,8 +33,8 @@ export function ProductDetails() {
     );
   }
 
-  const relatedProducts = products
-    .filter(p => p.category === product.category && p.id !== product.id)
+  const relatedProducts = (Array.isArray(products) ? products : [])
+    .filter(p => p?.category === product.category && p?.id !== product.id)
     .slice(0, 4);
 
   const isWishlisted = isFavorite(product.id);
@@ -70,7 +70,7 @@ export function ProductDetails() {
             className="aspect-square rounded-3xl overflow-hidden bg-zinc-900 border border-zinc-800"
           >
             <img
-              src={product.images[activeImage]}
+              src={product.images?.[activeImage] || 'https://picsum.photos/seed/luxury/800/800'}
               alt={product.name}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
@@ -78,7 +78,7 @@ export function ProductDetails() {
           </motion.div>
           
           <div className="grid grid-cols-4 gap-4">
-            {product.images.map((img, i) => (
+            {(product.images || []).map((img, i) => (
               <button
                 key={i}
                 onClick={() => setActiveImage(i)}

@@ -8,8 +8,8 @@ import { products } from '../data/products';
 
 export const mockAdminUser: AdminUser = {
   id: 'admin-1',
-  name: 'Admin ARC',
-  email: 'admin@arc.com',
+  name: 'Admin LUXE',
+  email: 'admin@luxe.com',
   avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
   role: 'admin',
 };
@@ -99,7 +99,7 @@ export const mockOrders: Order[] = [
       number: '1000',
       city: 'São Paulo',
       state: 'SP',
-      zipCode: '01310-100',
+      zip: '01310-100',
     },
   },
   {
@@ -140,7 +140,7 @@ export const mockOrders: Order[] = [
       number: '50',
       city: 'Rio de Janeiro',
       state: 'RJ',
-      zipCode: '22000-000',
+      zip: '22000-000',
     },
   },
   {
@@ -178,7 +178,7 @@ export const mockOrders: Order[] = [
       number: '1000',
       city: 'São Paulo',
       state: 'SP',
-      zipCode: '01310-100',
+      zip: '01310-100',
     },
   },
 ];

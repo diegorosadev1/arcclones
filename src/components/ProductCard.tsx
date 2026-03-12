@@ -31,8 +31,8 @@ export function ProductCard({ product }: ProductCardProps) {
     >
       <div className="relative aspect-square overflow-hidden">
         <img
-          src={product.images[0]}
-          alt={product.name}
+          src={product?.images?.[0] || 'https://picsum.photos/seed/luxury/400/400'}
+          alt={product?.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           referrerPolicy="no-referrer"
         />

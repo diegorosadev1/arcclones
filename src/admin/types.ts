@@ -82,7 +82,7 @@ export interface Order {
     complement?: string;
     city: string;
     state: string;
-    zipCode: string;
+    zip_code: string;
   };
 }
 

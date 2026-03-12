@@ -3,7 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type Category = 'Watches' | 'Shoulder Bags' | 'Glasses' | 'Jewelry';
+export type Category = "Watches" | "Shoulder Bags" | "Glasses" | "Jewelry";
+export type UserRole = "admin" | "customer";
+
+export interface Profile {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatar?: string;
+  created_at?: string;
+}
 
 export interface Product {
   id: string;
@@ -24,23 +34,29 @@ export interface Product {
   bestSeller?: boolean;
 }
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
+export interface User extends Profile {
   addresses: Address[];
   orders: Order[];
-  wishlist: string[]; // Product IDs
+  wishlist: string[];
 }
 
 export interface Address {
   id: string;
+  user_id: string;
   label: string;
+  recipient_name: string;
+  phone: string;
+  zip_code: string;
   street: string;
+  number: string;
+  complement?: string | null;
+  neighborhood: string;
   city: string;
   state: string;
-  zipCode: string;
-  isDefault: boolean;
+  country: string;
+  is_default: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface OrderItem {
@@ -51,14 +67,39 @@ export interface OrderItem {
   image: string;
 }
 
+export interface OrderStatusHistory {
+  status: Order["status"];
+  date: string;
+  description: string;
+}
+
+export interface TrackingHistory {
+  date: string;
+  location: string;
+  description: string;
+  status: string;
+}
+
 export interface Order {
   id: string;
+  orderNumber: string;
   date: string;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
   items: OrderItem[];
   total: number;
-  addressId: string;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  addressId?: string;
+  shippingAddress?: Address;
   paymentMethod: string;
+  paymentStatus: "Paid" | "Pending" | "Failed" | "Refunded";
+  trackingCode?: string;
+  carrier?: string;
+  estimatedDelivery?: string;
+  statusHistory: OrderStatusHistory[];
+  trackingHistory: TrackingHistory[];
+  userId: string;
 }
 
 export interface CartItem extends Product {

@@ -1,4 +1,4 @@
-import { ProductFormLayout } from "@/src/components/admin/products/ProductFormLayout";
+import { ProductFormLayout } from "@/src/admin/components/products/ProductFormLayout";
 import { useProductStore } from "@/src/store/useProductStore";
 import React, { useMemo, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
