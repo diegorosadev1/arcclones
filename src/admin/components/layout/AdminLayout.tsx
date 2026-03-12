@@ -1,32 +1,44 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
 
-import React, { useEffect } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { AdminSidebar } from './AdminSidebar';
-import { AdminHeader } from './AdminHeader';
-import { useAdminAuthStore } from '../../stores/useAdminAuthStore';
-import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight } from 'lucide-react';
+import React from "react";
+import { Outlet, useLocation, Navigate } from "react-router-dom";
+import { AdminSidebar } from "./AdminSidebar";
+import { AdminHeader } from "./AdminHeader";
+import { motion, AnimatePresence } from "motion/react";
+import { ChevronRight, Loader2 } from "lucide-react";
+import { useAuth } from "@/src/contexts/AuthContext";
 
 export function AdminLayout() {
-  const { isAuthenticated } = useAdminAuthStore();
-  const navigate = useNavigate();
+  const { user, profile, loading, isAdmin } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/admin/login');
-    }
-  }, [isAuthenticated, navigate]);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-luxury-black flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-accent animate-spin" />
+      </div>
+    );
+  }
 
-  if (!isAuthenticated) return null;
+  if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
 
-  const pathSegments = location.pathname.split('/').filter(Boolean);
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-luxury-black flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-accent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+
   const breadcrumbs = pathSegments.map((segment, index) => {
-    const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
+    const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
     const label = segment.charAt(0).toUpperCase() + segment.slice(1);
     return { label, path };
   });
@@ -36,13 +48,18 @@ export function AdminLayout() {
       <AdminSidebar />
       <div className="flex-grow ml-64 flex flex-col min-h-screen">
         <AdminHeader />
-        
+
         <main className="flex-grow p-8 space-y-8">
-          {/* Breadcrumbs */}
           <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-8">
             {breadcrumbs.map((crumb, index) => (
               <React.Fragment key={crumb.path}>
-                <span className={index === breadcrumbs.length - 1 ? "text-accent" : "hover:text-zinc-300 transition-colors"}>
+                <span
+                  className={
+                    index === breadcrumbs.length - 1
+                      ? "text-accent"
+                      : "hover:text-zinc-300 transition-colors"
+                  }
+                >
                   {crumb.label}
                 </span>
                 {index < breadcrumbs.length - 1 && <ChevronRight size={10} />}

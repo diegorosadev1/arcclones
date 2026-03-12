@@ -5,10 +5,10 @@
 
 import React from 'react';
 import { Search, Bell, User, ChevronDown } from 'lucide-react';
-import { useAdminAuthStore } from '../stores/useAdminAuthStore';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export function AdminHeader() {
-  const { admin } = useAdminAuthStore();
+  const { admin } = useAuth();
 
   return (
     <header className="h-20 bg-luxury-black/80 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-40 flex items-center justify-between px-8">

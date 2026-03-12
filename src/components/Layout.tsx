@@ -413,7 +413,7 @@ function Footer() {
             </li>
             <li>
               <Link
-                to="/admin"
+                to="/admin/login"
                 className="text-zinc-400 hover:text-accent text-sm transition-colors"
               >
                 Painel Administrativo

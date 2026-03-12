@@ -15,13 +15,13 @@ import {
   ExternalLink,
   ChevronRight
 } from 'lucide-react';
-import { useAdminAuthStore } from '../stores/useAdminAuthStore';
 import { clsx } from 'clsx';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export function AdminSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAdminAuthStore();
+  const { logout } = useAuth();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
