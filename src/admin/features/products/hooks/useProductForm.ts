@@ -3,7 +3,10 @@ import toast from "react-hot-toast";
 import type { Product } from "../../../../types";
 import { useProductStore } from "../../../../store/useProductStore";
 import { supabase } from "../../../../lib/supabase";
-import { getEmptyProduct, validateProductForm } from "../utils/productForm.helpers";
+import {
+  getEmptyProduct,
+  validateProductForm,
+} from "../utils/productForm.helpers";
 
 interface UseProductFormProps {
   mode: "view" | "edit" | "create";
@@ -51,30 +54,53 @@ export function useProductForm({
   const handleSave = async () => {
     if (!validate()) return false;
 
-    if (mode === "create") {
-      await createProduct(formData as Omit<Product, "id">);
-      toast.success("Produto criado com sucesso");
-    } else if (mode === "edit" && initialData?.id) {
-      await updateProduct(initialData.id, formData);
-      toast.success("Produto atualizado com sucesso");
-    }
+    try {
+      if (mode === "create") {
+        const created = await createProduct(formData as Omit<Product, "id">);
 
-    onSuccess?.();
-    return true;
+        if (!created) {
+          toast.error("Erro ao criar produto");
+          return false;
+        }
+
+        toast.success("Produto criado com sucesso");
+      } else if (mode === "edit" && initialData?.id) {
+        const updated = await updateProduct(initialData.id, formData);
+
+        if (!updated) {
+          toast.error("Erro ao atualizar produto");
+          return false;
+        }
+
+        toast.success("Produto atualizado com sucesso");
+      }
+
+      onSuccess?.();
+      return true;
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível salvar o produto");
+      return false;
+    }
   };
 
   const handleDelete = async () => {
-    if (
-      initialData?.id &&
-      confirm("Tem certeza que deseja excluir este produto?")
-    ) {
-      await deleteProduct(initialData.id);
-      toast.success("Produto removido com sucesso");
-      onDeleteSuccess?.();
-      return true;
+    if (!initialData?.id) return false;
+
+    if (!confirm("Tem certeza que deseja excluir este produto?")) {
+      return false;
     }
 
-    return false;
+    const deleted = await deleteProduct(initialData.id);
+
+    if (!deleted) {
+      toast.error("Erro ao remover produto");
+      return false;
+    }
+
+    toast.success("Produto removido com sucesso");
+    onDeleteSuccess?.();
+    return true;
   };
 
   const handleAddImageClick = () => {

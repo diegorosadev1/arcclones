@@ -15,6 +15,7 @@ export function ProductCreatePage() {
     setActiveTab,
     errors,
     fileInputRef,
+    isUploading,
     handleFileChange,
     handleAddImageClick,
     handleRemoveImage,
@@ -31,6 +32,7 @@ export function ProductCreatePage() {
       tag="Modo criação"
       mode="create"
       onSave={handleSave}
+      isUploading={isUploading}
     >
       <ProductFormFields
         mode="create"

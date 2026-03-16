@@ -20,6 +20,7 @@ export function ProductEditPage() {
     setActiveTab,
     errors,
     fileInputRef,
+    isUploading,
     handleFileChange,
     handleAddImageClick,
     handleRemoveImage,
@@ -41,6 +42,7 @@ export function ProductEditPage() {
       error={error}
       notFound={notFound}
       onSave={handleSave}
+      isUploading={isUploading}
     >
       <ProductFormFields
         mode="edit"

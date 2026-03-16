@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { Product } from '../types';
-import { productService } from '../services/productService';
+import { create } from "zustand";
+import { Product } from "../types";
+import { productService } from "../services/productService";
 
 interface ProductStoreState {
   products: Product[];
@@ -9,8 +9,7 @@ interface ProductStoreState {
   error: string | null;
   fetchProducts: (force?: boolean) => Promise<void>;
   fetchProductById: (id: string) => Promise<Product | null>;
-  addProduct: (product: Omit<Product, 'id'>) => Promise<Product | null>;
-  createProduct: (product: Omit<Product, 'id'>) => Promise<Product | null>;
+  createProduct: (product: Omit<Product, "id">) => Promise<Product | null>;
   updateProduct: (id: string, product: Partial<Product>) => Promise<Product | null>;
   deleteProduct: (id: string) => Promise<boolean>;
   toggleStatus: (id: string) => Promise<void>;
@@ -35,7 +34,10 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
     try {
       const fetchPromise = productService.getAll();
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Tempo limite de carregamento excedido')), 10000)
+        setTimeout(
+          () => reject(new Error("Tempo limite de carregamento excedido")),
+          10000,
+        ),
       );
 
       const products = await Promise.race([fetchPromise, timeoutPromise]);
@@ -47,7 +49,7 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
       });
     } catch (error: any) {
       set({
-        error: error?.message || 'Erro ao carregar produtos',
+        error: error?.message || "Erro ao carregar produtos",
         hasFetched: true,
       });
     } finally {
@@ -65,7 +67,7 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
       const product = await productService.getById(id);
 
       if (!product) {
-        set({ error: 'Produto não encontrado' });
+        set({ error: "Produto não encontrado" });
         return null;
       }
 
@@ -82,25 +84,7 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
 
       return product;
     } catch (error: any) {
-      set({ error: error?.message || 'Erro ao carregar produto' });
-      return null;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  addProduct: async (newProduct) => {
-    set({ isLoading: true, error: null });
-
-    try {
-      const product = await productService.create(newProduct);
-      set((state) => ({
-        products: [product, ...state.products],
-        error: null,
-      }));
-      return product;
-    } catch (error: any) {
-      set({ error: error?.message || 'Erro ao criar produto' });
+      set({ error: error?.message || "Erro ao carregar produto" });
       return null;
     } finally {
       set({ isLoading: false });
@@ -112,13 +96,16 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
 
     try {
       const product = await productService.create(newProduct);
+
       set((state) => ({
-        products: [product, ...state.products],
+        products: [product, ...state.products.filter((p) => p.id !== product.id)],
         error: null,
       }));
+
       return product;
     } catch (error: any) {
-      set({ error: error?.message || 'Erro ao criar produto' });
+      console.error("Erro no store ao criar produto:", error);
+      set({ error: error?.message || "Erro ao criar produto" });
       return null;
     } finally {
       set({ isLoading: false });
@@ -130,13 +117,18 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
 
     try {
       const updatedProduct = await productService.update(id, updatedFields);
+
       set((state) => ({
-        products: state.products.map((p) => (p.id === id ? updatedProduct : p)),
+        products: state.products.some((p) => p.id === id)
+          ? state.products.map((p) => (p.id === id ? updatedProduct : p))
+          : [updatedProduct, ...state.products],
         error: null,
       }));
+
       return updatedProduct;
     } catch (error: any) {
-      set({ error: error?.message || 'Erro ao atualizar produto' });
+      console.error("Erro no store ao atualizar produto:", error);
+      set({ error: error?.message || "Erro ao atualizar produto" });
       return null;
     } finally {
       set({ isLoading: false });
@@ -148,13 +140,16 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
 
     try {
       await productService.delete(id);
+
       set((state) => ({
         products: state.products.filter((p) => p.id !== id),
         error: null,
       }));
+
       return true;
     } catch (error: any) {
-      set({ error: error?.message || 'Erro ao deletar produto' });
+      console.error("Erro no store ao deletar produto:", error);
+      set({ error: error?.message || "Erro ao deletar produto" });
       return false;
     } finally {
       set({ isLoading: false });
