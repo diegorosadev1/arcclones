@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AdminUser, Customer, Order, DashboardMetrics, SalesData, StatusDistribution } from './types';
+import { AdminUser, Customer, Order, DashboardMetrics, SalesData, StatusDistribution } from './features/products/types/types';
 import { products } from '../data/products';
 
 export const mockAdminUser: AdminUser = {
@@ -99,7 +99,7 @@ export const mockOrders: Order[] = [
       number: '1000',
       city: 'São Paulo',
       state: 'SP',
-      zip: '01310-100',
+      zip_code: '01310-100',
     },
   },
   {
@@ -140,7 +140,7 @@ export const mockOrders: Order[] = [
       number: '50',
       city: 'Rio de Janeiro',
       state: 'RJ',
-      zip: '22000-000',
+       zip_code: '22000-000',
     },
   },
   {
@@ -178,7 +178,7 @@ export const mockOrders: Order[] = [
       number: '1000',
       city: 'São Paulo',
       state: 'SP',
-      zip: '01310-100',
+       zip_code: '01310-100',
     },
   },
 ];

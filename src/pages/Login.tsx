@@ -217,7 +217,7 @@ export function Login() {
         <p className="text-center text-sm text-zinc-500">
           Ainda não tem uma conta?{" "}
           <Link
-            to="/register"
+            to="/registrar"
             className="text-accent font-bold hover:underline"
           >
             Cadastre-se agora
