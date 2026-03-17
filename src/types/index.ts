@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type Category = "Watches" | "Shoulder Bags" | "Glasses" | "Jewelry";
-export type UserRole = "admin" | "customer";
+export type Category = 'Watches' | 'Shoulder Bags' | 'Glasses' | 'Jewelry';
+export type UserRole = 'admin' | 'customer';
+export type PaymentMethod = 'card' | 'pix' | 'boleto';
 
 export interface Profile {
   id: string;
@@ -32,6 +33,10 @@ export interface Product {
   featured?: boolean;
   newArrival?: boolean;
   bestSeller?: boolean;
+}
+
+export interface CartItem extends Product {
+  quantity: number;
 }
 
 export interface User extends Profile {
@@ -68,7 +73,7 @@ export interface OrderItem {
 }
 
 export interface OrderStatusHistory {
-  status: Order["status"];
+  status: Order['status'];
   date: string;
   description: string;
 }
@@ -84,7 +89,7 @@ export interface Order {
   id: string;
   orderNumber: string;
   date: string;
-  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   items: OrderItem[];
   total: number;
   subtotal: number;
@@ -93,7 +98,7 @@ export interface Order {
   addressId?: string;
   shippingAddress?: Address;
   paymentMethod: string;
-  paymentStatus: "Paid" | "Pending" | "Failed" | "Refunded";
+  paymentStatus: 'Paid' | 'Pending' | 'Failed' | 'Refunded';
   trackingCode?: string;
   carrier?: string;
   estimatedDelivery?: string;
@@ -102,6 +107,32 @@ export interface Order {
   userId: string;
 }
 
-export interface CartItem extends Product {
+export interface CheckoutItemPayload {
+  product_id: string;
+  product_name: string;
+  product_image?: string;
+  unit_price: number;
   quantity: number;
+  line_total: number;
+}
+
+export interface CreateCheckoutSessionPayload {
+  user_id: string | null;
+  customer_email: string;
+  shipping_full_name: string;
+  shipping_address: string;
+  shipping_city: string;
+  shipping_zip_code: string;
+  shipping_country: string;
+  payment_method: PaymentMethod;
+  items: CheckoutItemPayload[];
+  shipping_amount: number;
+  success_url: string;
+  cancel_url: string;
+}
+
+export interface CreateCheckoutSessionResponse {
+  checkout_url: string;
+  order_id: string;
+  session_id: string;
 }

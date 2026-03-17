@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   ChevronRight,
   ChevronLeft,
@@ -16,22 +16,27 @@ import {
   ShieldCheck,
   QrCode,
   ReceiptText,
+  Loader2,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { useAuth } from '../contexts/AuthContext';
 import { useAddressStore } from '../store/useAddressStore';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx } from 'clsx';
+import { createCheckoutSession } from '../services/orderService';
 
-type Step = 'identification' | 'shipping' | 'payment' | 'review' | 'success';
+type Step = 'identification' | 'shipping' | 'payment' | 'review';
 
 export function Checkout() {
-  const { cart, clearCart, addNotification } = useStore();
+  const { cart, addNotification } = useStore();
   const { profile, user } = useAuth();
   const { addresses, fetchAddresses } = useAddressStore();
   const navigate = useNavigate();
 
   const [currentStep, setCurrentStep] = useState<Step>('identification');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -98,19 +103,132 @@ export function Checkout() {
     { id: 'review', label: 'Revisão', icon: ReceiptText },
   ];
 
-  const handleNext = () => {
-    const currentIndex = steps.findIndex((s) => s.id === currentStep);
+  const paymentMethodMap: Record<string, 'card' | 'pix' | 'boleto'> = {
+    credit_card: 'card',
+    pix: 'pix',
+    boleto: 'boleto',
+  };
 
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1].id);
-    } else if (currentStep === 'review') {
-      setCurrentStep('success');
-      clearCart();
-      addNotification('Pedido realizado com sucesso!', 'success');
+  const validateIdentificationStep = () => {
+    if (!formData.name.trim()) throw new Error('Informe seu nome completo.');
+    if (!formData.email.trim()) throw new Error('Informe seu e-mail.');
+    if (!formData.phone.trim()) throw new Error('Informe seu telefone.');
+  };
+
+  const validateShippingStep = () => {
+    if (!formData.zip_code.trim()) throw new Error('Informe o CEP.');
+    if (!formData.street.trim()) throw new Error('Informe o endereço.');
+    if (!formData.number.trim()) throw new Error('Informe o número do endereço.');
+    if (!formData.city.trim()) throw new Error('Informe a cidade.');
+    if (!formData.state.trim()) throw new Error('Informe o estado.');
+  };
+
+  const validateCheckout = () => {
+    if (!cart.length) throw new Error('Seu carrinho está vazio.');
+    validateIdentificationStep();
+    validateShippingStep();
+
+    if (!paymentMethodMap[formData.paymentMethod]) {
+      throw new Error('Selecione uma forma de pagamento válida.');
+    }
+  };
+
+  const buildShippingAddress = () => {
+    const parts = [
+      formData.street.trim(),
+      formData.number.trim() ? `Nº ${formData.number.trim()}` : '',
+      formData.complement.trim() ? `Compl. ${formData.complement.trim()}` : '',
+      formData.neighborhood.trim()
+        ? `Bairro ${formData.neighborhood.trim()}`
+        : '',
+      formData.state.trim() ? `Estado ${formData.state.trim()}` : '',
+    ].filter(Boolean);
+
+    return parts.join(', ');
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setCheckoutError('');
+      setIsSubmitting(true);
+
+      validateCheckout();
+
+      const origin = window.location.origin;
+
+      const items = cart.map((item) => ({
+        product_id: item.id,
+        product_name: item.name,
+        product_image: item.images?.[0] || '',
+        unit_price: Number(item.promoPrice || item.price),
+        quantity: item.quantity,
+        line_total: Number(item.promoPrice || item.price) * item.quantity,
+      }));
+
+      const payload = {
+        user_id: user?.id ?? null,
+        customer_email: formData.email.trim(),
+        shipping_full_name: formData.name.trim(),
+        shipping_address: buildShippingAddress(),
+        shipping_city: formData.city.trim(),
+        shipping_zip_code: formData.zip_code.trim(),
+        shipping_country: 'Brasil',
+        payment_method: paymentMethodMap[formData.paymentMethod],
+        items,
+        shipping_amount: shipping,
+        success_url: `${origin}/checkout/success`,
+        cancel_url: `${origin}/checkout`,
+      };
+
+      const response = await createCheckoutSession(payload);
+
+      if (!response?.checkout_url) {
+        throw new Error('Não foi possível gerar o link de pagamento.');
+      }
+
+      window.location.href = response.checkout_url;
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erro ao iniciar o checkout.';
+
+      setCheckoutError(message);
+      addNotification(message, 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNext = async () => {
+    try {
+      setCheckoutError('');
+
+      const currentIndex = steps.findIndex((s) => s.id === currentStep);
+
+      if (currentStep === 'identification') validateIdentificationStep();
+      if (currentStep === 'shipping') validateShippingStep();
+
+      if (currentIndex < steps.length - 1) {
+        setCurrentStep(steps[currentIndex + 1].id);
+        return;
+      }
+
+      if (currentStep === 'review') {
+        await handleCheckout();
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Verifique os dados informados.';
+
+      setCheckoutError(message);
+      addNotification(message, 'error');
     }
   };
 
   const handleBack = () => {
+    if (isSubmitting) return;
+
     const currentIndex = steps.findIndex((s) => s.id === currentStep);
 
     if (currentIndex > 0) {
@@ -119,38 +237,6 @@ export function Checkout() {
       navigate('/cart');
     }
   };
-
-  if (currentStep === 'success') {
-    return (
-      <div className="pt-40 pb-24 px-6 max-w-7xl mx-auto text-center space-y-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-24 h-24 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto"
-        >
-          <CheckCircle size={64} />
-        </motion.div>
-
-        <div className="space-y-4">
-          <h2 className="text-4xl font-display font-bold">Pedido Confirmado!</h2>
-          <p className="text-zinc-500 max-w-md mx-auto">
-            Obrigado pela sua compra, {formData.name.split(' ')[0] || 'cliente'}.
-            Enviamos os detalhes do pedido para o seu e-mail.
-          </p>
-          <p className="text-xs text-zinc-600">Número do pedido: #LX-78291-2026</p>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link to="/account" className="btn-outline px-10 py-4">
-            Ver Meus Pedidos
-          </Link>
-          <Link to="/" className="btn-primary px-10 py-4">
-            Voltar para a Home
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
@@ -369,6 +455,39 @@ export function Checkout() {
                           placeholder="São Paulo"
                         />
                       </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                          Estado
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.state}
+                          onChange={(e) =>
+                            setFormData({ ...formData, state: e.target.value })
+                          }
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                          placeholder="SP"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                          Bairro
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.neighborhood}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              neighborhood: e.target.value,
+                            })
+                          }
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                          placeholder="Centro"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -390,22 +509,23 @@ export function Checkout() {
                           id: 'credit_card',
                           label: 'Cartão de Crédito',
                           icon: CreditCard,
-                          desc: 'Até 10x sem juros',
+                          desc: 'Checkout Stripe',
                         },
                         {
                           id: 'pix',
                           label: 'PIX',
                           icon: QrCode,
-                          desc: 'Aprovação imediata',
+                          desc: 'Checkout Stripe',
                         },
                         {
                           id: 'boleto',
                           label: 'Boleto Bancário',
                           icon: ReceiptText,
-                          desc: 'Até 3 dias úteis',
+                          desc: 'Checkout Stripe',
                         },
                       ].map((method) => (
                         <button
+                          type="button"
                           key={method.id}
                           onClick={() =>
                             setFormData({ ...formData, paymentMethod: method.id })
@@ -444,39 +564,9 @@ export function Checkout() {
                         animate={{ opacity: 1, y: 0 }}
                         className="p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 space-y-6"
                       >
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-                            Número do Cartão
-                          </label>
-                          <input
-                            type="text"
-                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
-                            placeholder="0000 0000 0000 0000"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-                              Validade
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
-                              placeholder="MM/AA"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-                              CVV
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
-                              placeholder="123"
-                            />
-                          </div>
+                        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+                          Os dados abaixo são apenas visuais no momento. O pagamento real
+                          será processado no Stripe Checkout após clicar em finalizar.
                         </div>
                       </motion.div>
                     )}
@@ -494,6 +584,12 @@ export function Checkout() {
                       </p>
                     </div>
 
+                    {checkoutError && (
+                      <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+                        {checkoutError}
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-6">
                         <div className="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 space-y-4">
@@ -502,6 +598,7 @@ export function Checkout() {
                               Entrega
                             </h4>
                             <button
+                              type="button"
                               onClick={() => setCurrentStep('shipping')}
                               className="text-accent text-xs font-bold hover:underline"
                             >
@@ -512,6 +609,11 @@ export function Checkout() {
                             {formData.street}, {formData.number}{' '}
                             {formData.complement ? `- ${formData.complement}` : ''}
                           </p>
+                          {formData.neighborhood && (
+                            <p className="text-sm text-zinc-300">
+                              Bairro: {formData.neighborhood}
+                            </p>
+                          )}
                           <p className="text-sm text-zinc-300">
                             {formData.city}, {formData.state} - {formData.zip_code}
                           </p>
@@ -523,6 +625,7 @@ export function Checkout() {
                               Pagamento
                             </h4>
                             <button
+                              type="button"
                               onClick={() => setCurrentStep('payment')}
                               className="text-accent text-xs font-bold hover:underline"
                             >
@@ -585,20 +688,33 @@ export function Checkout() {
 
                 <div className="flex items-center justify-between pt-8 border-t border-zinc-800">
                   <button
+                    type="button"
                     onClick={handleBack}
-                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors font-bold text-sm uppercase tracking-widest"
+                    disabled={isSubmitting}
+                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors font-bold text-sm uppercase tracking-widest disabled:opacity-50"
                   >
                     <ChevronLeft size={18} /> Voltar
                   </button>
 
                   <button
+                    type="button"
                     onClick={handleNext}
-                    className="btn-primary px-12 py-4 uppercase tracking-widest text-sm font-bold"
+                    disabled={isSubmitting || cart.length === 0}
+                    className="btn-primary px-12 py-4 uppercase tracking-widest text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                   >
-                    {currentStep === 'review'
-                      ? 'Finalizar Pedido'
-                      : 'Próximo Passo'}{' '}
-                    <ChevronRight size={18} />
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        Redirecionando...
+                      </>
+                    ) : (
+                      <>
+                        {currentStep === 'review'
+                          ? 'Finalizar Pedido'
+                          : 'Próximo Passo'}{' '}
+                        <ChevronRight size={18} />
+                      </>
+                    )}
                   </button>
                 </div>
               </motion.div>
@@ -667,9 +783,15 @@ export function Checkout() {
                 Precisa de ajuda com o pagamento?
               </p>
               <p className="text-xs text-accent font-bold mt-1 cursor-pointer hover:underline">
-                Falar com Consultor LUXE
+                Falar com Consultor ARC
               </p>
             </div>
+
+            {!cart.length && (
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+                Seu carrinho está vazio. Adicione produtos antes de finalizar.
+              </div>
+            )}
           </div>
         </div>
       </div>

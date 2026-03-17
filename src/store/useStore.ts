@@ -5,7 +5,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CartItem, Product } from '../types';
+import type { CartItem, Product } from '../types';
 
 interface Notification {
   id: string;
@@ -20,7 +20,10 @@ interface StoreState {
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
-  addNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
+  addNotification: (
+    message: string,
+    type?: 'success' | 'error' | 'info'
+  ) => void;
   removeNotification: (id: string) => void;
 }
 
@@ -43,13 +46,24 @@ export const useStore = create<StoreState>()(
             ),
           });
         } else {
-          set({ cart: [...cart, { ...product, quantity }] });
+          set({
+            cart: [
+              ...cart,
+              {
+                ...product,
+                quantity,
+              },
+            ],
+          });
         }
+
         get().addNotification(`${product.name} adicionado ao carrinho`, 'success');
       },
 
       removeFromCart: (productId) => {
-        set({ cart: get().cart.filter((item) => item.id !== productId) });
+        set({
+          cart: get().cart.filter((item) => item.id !== productId),
+        });
         get().addNotification('Item removido do carrinho', 'info');
       },
 
@@ -58,6 +72,7 @@ export const useStore = create<StoreState>()(
           get().removeFromCart(productId);
           return;
         }
+
         set({
           cart: get().cart.map((item) =>
             item.id === productId ? { ...item, quantity } : item
@@ -68,13 +83,21 @@ export const useStore = create<StoreState>()(
       clearCart: () => set({ cart: [] }),
 
       addNotification: (message, type = 'info') => {
-        const id = Math.random().toString(36).substring(7);
-        set({ notifications: [...get().notifications, { id, message, type }] });
-        setTimeout(() => get().removeNotification(id), 3000);
+        const id = Math.random().toString(36).substring(2, 11);
+
+        set({
+          notifications: [...get().notifications, { id, message, type }],
+        });
+
+        setTimeout(() => {
+          get().removeNotification(id);
+        }, 3000);
       },
 
       removeNotification: (id) => {
-        set({ notifications: get().notifications.filter((n) => n.id !== id) });
+        set({
+          notifications: get().notifications.filter((n) => n.id !== id),
+        });
       },
     }),
     {

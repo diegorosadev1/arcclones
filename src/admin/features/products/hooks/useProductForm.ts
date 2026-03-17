@@ -64,6 +64,7 @@ export function useProductForm({
         }
 
         toast.success("Produto criado com sucesso");
+        
       } else if (mode === "edit" && initialData?.id) {
         const updated = await updateProduct(initialData.id, formData);
 

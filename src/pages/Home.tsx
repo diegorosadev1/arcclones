@@ -34,7 +34,7 @@ export function Home() {
       <div className="h-screen flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-12 h-12 text-accent animate-spin" />
         <p className="text-zinc-500 font-display uppercase tracking-widest text-sm">
-          Carregando Experiência LUXE...
+          Carregando Experiência ARC CLONES...
         </p>
       </div>
     );
@@ -217,7 +217,7 @@ export function Home() {
       <section className="bg-luxury-card py-24 border-y border-zinc-800">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl md:text-5xl font-display font-bold">A Experiência LUXE</h2>
+            <h2 className="text-3xl md:text-5xl font-display font-bold">A Experiência ARC CLONES</h2>
             <p className="text-zinc-500">Por que somos a escolha número um em acessórios de luxo.</p>
           </div>
 
@@ -306,7 +306,7 @@ export function Home() {
       <section className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-3xl md:text-5xl font-display font-bold">O Que Dizem Nossos Clientes</h2>
-          <p className="text-zinc-500">A satisfação de quem já viveu a experiência LUXE.</p>
+          <p className="text-zinc-500">A satisfação de quem já viveu a experiência ARC CLONES.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

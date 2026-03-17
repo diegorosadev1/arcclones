@@ -7,7 +7,7 @@ export function BenefitsSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-3xl md:text-5xl font-display font-bold">
-            A Experiência LUXE
+            A Experiência ARC
           </h2>
           <p className="text-zinc-500">
             Por que somos a escolha número um em acessórios de luxo.

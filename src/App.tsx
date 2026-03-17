@@ -5,11 +5,11 @@ import { Catalog } from "./pages/Catalog";
 import { ProductDetails } from "./pages/ProductDetails";
 import { Cart } from "./pages/Cart";
 import { Checkout } from "./pages/Checkout";
+import { CheckoutSuccess } from "./pages/CheckoutSuccess";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Account } from "./pages/Account";
 import { Wishlist } from "./pages/Wishlist";
-import { Toaster } from "./components/Toaster";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminRoute } from "./components/auth/AdminRoute";
@@ -25,12 +25,13 @@ import { ProductViewPage } from "./admin/features/products/pages/[id]/ProductVie
 import { ProductEditPage } from "./admin/features/products/pages/[id]/edit/ProductEditPage";
 import { AdminLayout } from "./admin/components/layout/AdminLayout";
 import { UserList } from "./admin/features/users/pages/UserListPage";
+import { Toaster } from "./components/Toaster";
 
 export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <Toaster />
+        <Toaster position="top-right" />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
@@ -46,6 +47,16 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="checkout/success"
+              element={
+                <ProtectedRoute>
+                  <CheckoutSuccess />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="account"
               element={

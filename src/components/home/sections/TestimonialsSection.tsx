@@ -10,7 +10,7 @@ export function TestimonialsSection() {
           O Que Dizem Nossos Clientes
         </h2>
         <p className="text-zinc-500">
-          A satisfação de quem já viveu a experiência LUXE.
+          A satisfação de quem já viveu a experiência ARC.
         </p>
       </div>
 
